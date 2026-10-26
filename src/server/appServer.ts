@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
@@ -736,6 +737,52 @@ Provide concise, highly actionable, scannable advice. Include bullet points, exa
     }
     const ingResult = procurementService.searchByBarcode(barcode);
     res.status(200).json(ingResult);
+  });
+
+  // 8. Android APK & Project Downloads
+  app.get(['/download/talk-of-the-town-pos.apk', '/api/download/apk'], (_req: Request, res: Response) => {
+    const apkFile = path.resolve(ROOT_DIR, 'public/downloads/talk-of-the-town-pos.apk');
+    if (fs.existsSync(apkFile)) {
+      res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+      res.setHeader('Content-Disposition', 'attachment; filename="talk-of-the-town-pos.apk"');
+      res.sendFile(apkFile);
+    } else {
+      res.status(404).json({ error: 'APK file not found' });
+    }
+  });
+
+  app.get(['/download/talk-of-the-town-android-project.zip', '/api/download/android-project'], (_req: Request, res: Response) => {
+    const zipFile = path.resolve(ROOT_DIR, 'public/downloads/talk-of-the-town-android-project.zip');
+    if (fs.existsSync(zipFile)) {
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', 'attachment; filename="talk-of-the-town-android-project.zip"');
+      res.sendFile(zipFile);
+    } else {
+      res.status(404).json({ error: 'Project archive not found' });
+    }
+  });
+
+  // 9. Windows & macOS Desktop App Downloads
+  app.get(['/download/talk-of-the-town-pos-windows.zip', '/api/download/windows'], (_req: Request, res: Response) => {
+    const zipFile = path.resolve(ROOT_DIR, 'public/downloads/talk-of-the-town-pos-windows.zip');
+    if (fs.existsSync(zipFile)) {
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', 'attachment; filename="talk-of-the-town-pos-windows.zip"');
+      res.sendFile(zipFile);
+    } else {
+      res.status(404).json({ error: 'Windows desktop package not found' });
+    }
+  });
+
+  app.get(['/download/talk-of-the-town-pos-macos.zip', '/api/download/macos'], (_req: Request, res: Response) => {
+    const zipFile = path.resolve(ROOT_DIR, 'public/downloads/talk-of-the-town-pos-macos.zip');
+    if (fs.existsSync(zipFile)) {
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', 'attachment; filename="talk-of-the-town-pos-macos.zip"');
+      res.sendFile(zipFile);
+    } else {
+      res.status(404).json({ error: 'macOS desktop package not found' });
+    }
   });
 
   // Vite Integration in Development vs Production static build

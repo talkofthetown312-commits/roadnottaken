@@ -13,7 +13,9 @@ import {
   Tv,
   Users,
   BookOpen,
-  Sparkles
+  Sparkles,
+  Smartphone,
+  Monitor
 } from 'lucide-react';
 import { RestaurantProfile } from '../server/types';
 
@@ -36,6 +38,8 @@ interface TopBarProps {
   onSimulateWebhook: (aggregator: 'ZOMATO' | 'SWIGGY') => void;
   restaurantProfile?: RestaurantProfile | null;
   onOpenProfileSettings?: () => void;
+  onOpenAndroidModal?: () => void;
+  onOpenDesktopModal?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -44,6 +48,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   onSimulateWebhook,
   restaurantProfile,
   onOpenProfileSettings,
+  onOpenAndroidModal,
+  onOpenDesktopModal,
 }) => {
   return (
     <header className="flex items-center justify-between gap-3 px-4 sm:px-6 py-2.5 bg-white border-b border-slate-200">
@@ -224,6 +230,24 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Zone 3: Settings button & Webhook simulators */}
       <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={onOpenDesktopModal}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-blue-950 bg-blue-300 hover:bg-blue-200 border border-blue-400 rounded-md transition-all shadow-xs whitespace-nowrap active:scale-95"
+          title="Deliver Windows & macOS Desktop Application"
+        >
+          <Monitor className="w-3.5 h-3.5 text-blue-950" />
+          <span>Desktop App</span>
+        </button>
+
+        <button
+          onClick={onOpenAndroidModal}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-emerald-950 bg-emerald-400 hover:bg-emerald-300 border border-emerald-500 rounded-md transition-all shadow-xs whitespace-nowrap active:scale-95"
+          title="Deliver Android APK & Mobile Installation Package"
+        >
+          <Smartphone className="w-3.5 h-3.5 text-emerald-950" />
+          <span>Deliver APK</span>
+        </button>
+
         <button
           onClick={onOpenProfileSettings}
           className="flex items-center gap-1 px-2 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-md transition-colors whitespace-nowrap"

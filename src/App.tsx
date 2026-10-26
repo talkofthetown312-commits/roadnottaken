@@ -14,6 +14,9 @@ import { KioskView } from './components/KioskView';
 import { SalaryManagementView } from './components/SalaryManagementView';
 import { RuleBookView } from './components/RuleBookView';
 import { AssistantView } from './components/AssistantView';
+import { AndroidDeliveryModal } from './components/AndroidDeliveryModal';
+import { DesktopDeliveryModal } from './components/DesktopDeliveryModal';
+import { useDesktopShortcuts } from './hooks/useDesktopShortcuts';
 import {
   MenuItem,
   OrderInput,
@@ -76,6 +79,8 @@ export default function App() {
   // Restaurant Profile & Procurement Inwarding
   const [restaurantProfile, setRestaurantProfile] = useState<RestaurantProfile | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showAndroidModal, setShowAndroidModal] = useState(false);
+  const [showDesktopModal, setShowDesktopModal] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [grnList, setGrnList] = useState<GoodsReceivedNote[]>([]);
@@ -130,6 +135,17 @@ export default function App() {
     }, 3500);
     return () => clearInterval(interval);
   }, [fetchBootstrapData]);
+
+  // Global Desktop & ERP Keyboard Accelerators
+  useDesktopShortcuts({
+    onTabChange: setActiveTab,
+    onOpenSettings: () => setShowProfileModal(true),
+    onOpenDesktopModal: () => setShowDesktopModal(true),
+    onTriggerSync: async () => {
+      await fetch('/api/edge/trigger-sync', { method: 'POST' });
+      await fetchBootstrapData();
+    },
+  });
 
   const handlePlaceOrder = async (order: OrderInput) => {
     const res = await fetch('/api/edge/orders', {
@@ -496,6 +512,8 @@ export default function App() {
         onSimulateWebhook={handleSimulateWebhook}
         restaurantProfile={currentProfile}
         onOpenProfileSettings={() => setShowProfileModal(true)}
+        onOpenAndroidModal={() => setShowAndroidModal(true)}
+        onOpenDesktopModal={() => setShowDesktopModal(true)}
       />
 
       {/* Edge Node & Outbox Sync Sub-Bar */}
@@ -633,6 +651,16 @@ export default function App() {
           onSave={handleUpdateProfile}
           onClose={() => setShowProfileModal(false)}
         />
+      )}
+
+      {/* Android APK & Cross-Platform Delivery Modal */}
+      {showAndroidModal && (
+        <AndroidDeliveryModal onClose={() => setShowAndroidModal(false)} />
+      )}
+
+      {/* Windows & macOS Desktop Application Modal */}
+      {showDesktopModal && (
+        <DesktopDeliveryModal onClose={() => setShowDesktopModal(false)} />
       )}
 
       {/* Thermal Paper Slip Modal Previewer */}

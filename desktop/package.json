@@ -1,0 +1,20 @@
+{
+  "name": "talk-of-the-town-pos-desktop",
+  "version": "1.0.0",
+  "description": "Talk of the Town Enterprise POS Desktop Client",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "pos",
+    "restaurant",
+    "desktop",
+    "electron"
+  ],
+  "author": "Road Not Taken Enterprise POS",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "electron": "^28.2.0"
+  }
+}

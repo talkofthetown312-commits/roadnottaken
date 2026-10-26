@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#brandGrad)"/>
+  <!-- Bold Stylized 'R' with Wok Steam Motifs -->
+  <path d="M 160 120 L 280 120 C 340 120 370 150 370 210 C 370 260 340 290 290 295 L 375 392 L 315 392 L 245 300 L 220 300 L 220 392 L 160 392 Z M 220 172 L 220 248 L 275 248 C 305 248 318 235 318 210 C 318 185 305 172 275 172 Z" fill="#ffffff"/>
+  <!-- Culinary Accent Accentuation -->
+  <circle cx="360" cy="140" r="16" fill="#fde047"/>
+</svg>
