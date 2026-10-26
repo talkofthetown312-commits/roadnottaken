@@ -15,11 +15,8 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({
   onUpdateStatus,
   onPunchLanOrder,
 }) => {
-  const [captainTable, setCaptainTable] = useState('T-04');
-  const [captainSelectedItems, setCaptainSelectedItems] = useState<{ [itemId: string]: number }>({
-    'item-004': 2, // Chicken Dum Biryani
-    'item-006': 2, // Mango Lassi
-  });
+  const [captainTable, setCaptainTable] = useState('T-01');
+  const [captainSelectedItems, setCaptainSelectedItems] = useState<{ [itemId: string]: number }>({});
   const [captainStatusMsg, setCaptainStatusMsg] = useState<{ text: string; isDuplicate?: boolean } | null>(null);
   const [isPunchingLan, setIsPunchingLan] = useState(false);
 
@@ -59,7 +56,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({
 
     const orderInput: OrderInput = {
       order_id: fixedOrderId,
-      outlet_id: 'OUTLET-BLR-01',
+      outlet_id: 'OUTLET-IMF-01',
       terminal_id: 'CAPTAIN-ANDROID-HANDHELD-02',
       table_id: captainTable,
       invoice_number: invoiceNumber,

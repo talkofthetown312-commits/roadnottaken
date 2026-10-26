@@ -92,7 +92,7 @@ export class AggregatorWebhookEngine {
 
     const canonicalOrder: OrderInput = {
       order_id: orderId,
-      outlet_id: payload.outlet_id || 'OUTLET-BLR-01',
+      outlet_id: payload.outlet_id || 'OUTLET-IMF-01',
       terminal_id: `AGGREGATOR-${aggregator}`,
       invoice_number: payload.invoice_number || `${aggregator.slice(0, 3)}-${Date.now().toString().slice(-6)}`,
       order_status: 'PREPARING',
@@ -142,10 +142,10 @@ export class AggregatorWebhookEngine {
     signature: string;
   } {
     const randomItems = [
-      CATALOG_ITEMS[0], // Paneer Butter Masala
-      CATALOG_ITEMS[2], // Butter Naan
-      CATALOG_ITEMS[5]  // Mango Lassi
-    ];
+      CATALOG_ITEMS[0] || CATALOG_ITEMS[0], // Veg Chowmein (Small)
+      CATALOG_ITEMS[6] || CATALOG_ITEMS[0], // Chicken Chowmein (Small)
+      CATALOG_ITEMS[15] || CATALOG_ITEMS[0] // Veg Fried Rice (Small)
+    ].filter(Boolean);
 
     const orderId = crypto.randomUUID();
     const invoiceNum = `${aggregator.slice(0, 3)}-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -154,20 +154,20 @@ export class AggregatorWebhookEngine {
       order_item_id: crypto.randomUUID(),
       item_id: menuItem.item_id,
       item_name: menuItem.name,
-      quantity: menuItem.item_id === 'item-003' ? 2 : 1,
+      quantity: 1,
       unit_price: menuItem.price,
-      sub_total: menuItem.item_id === 'item-003' ? menuItem.price * 2 : menuItem.price
+      sub_total: menuItem.price
     }));
 
     const rawPayloadObj = {
       aggregator,
       order_id: orderId,
-      outlet_id: 'OUTLET-BLR-01',
+      outlet_id: 'OUTLET-IMF-01',
       invoice_number: invoiceNum,
-      customer_name: aggregator === 'ZOMATO' ? 'Rohan Sharma' : 'Ananya Roy',
-      delivery_address: 'Flat 402, Prestige Tower, Indiranagar',
+      customer_name: aggregator === 'ZOMATO' ? 'L. Sanjit Singh' : 'T. Bimola Devi',
+      delivery_address: 'Thangal Bazaar, Imphal, Manipur',
       items,
-      discount_total: aggregator === 'ZOMATO' ? 50 : 30
+      discount_total: aggregator === 'ZOMATO' ? 20 : 10
     };
 
     const rawPayload = JSON.stringify(rawPayloadObj);
@@ -179,7 +179,7 @@ export class AggregatorWebhookEngine {
       success: true,
       order: {
         order_id: orderId,
-        outlet_id: 'OUTLET-BLR-01',
+        outlet_id: 'OUTLET-IMF-01',
         terminal_id: `AGGREGATOR-${aggregator}`,
         invoice_number: invoiceNum,
         order_status: 'PREPARING',

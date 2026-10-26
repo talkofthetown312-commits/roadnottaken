@@ -35,12 +35,12 @@ export class InventoryService {
         );
       }
 
-      // If takeaway/delivery, also deduct 1 packaging box per line item
+      // If takeaway/delivery, also deduct 1 packaging container per line item
       this.db.run(
         `UPDATE inventory_items 
          SET current_stock = MAX(0, current_stock - ?),
              updated_at = CURRENT_TIMESTAMP
-         WHERE ingredient_id = 'ing-box'`,
+         WHERE ingredient_id = 'TOT-031'`,
         [item.quantity]
       );
     }
@@ -76,7 +76,7 @@ export class InventoryService {
         `UPDATE inventory_items 
          SET current_stock = current_stock + ?,
              updated_at = CURRENT_TIMESTAMP
-         WHERE ingredient_id = 'ing-box'`,
+         WHERE ingredient_id = 'TOT-031'`,
         [item.quantity]
       );
     }
@@ -87,24 +87,26 @@ export class InventoryService {
    */
   public getInventoryStatus(): (InventoryItem & { is_low_stock: boolean })[] {
     const res = this.db.exec(`
-      SELECT ingredient_id, name, unit, current_stock, reorder_level, cost_per_unit, updated_at
+      SELECT ingredient_id, name, unit, category, treatment, current_stock, reorder_level, cost_per_unit, updated_at
       FROM inventory_items
-      ORDER BY name ASC
+      ORDER BY ingredient_id ASC
     `);
 
     if (!res[0] || !res[0].values) return [];
 
     return res[0].values.map((row) => {
-      const current_stock = Number(row[3]);
-      const reorder_level = Number(row[4]);
+      const current_stock = Number(row[5]);
+      const reorder_level = Number(row[6]);
       return {
         ingredient_id: String(row[0]),
         name: String(row[1]),
         unit: String(row[2]),
+        category: row[3] ? String(row[3]) : undefined,
+        treatment: row[4] ? String(row[4]) : undefined,
         current_stock,
         reorder_level,
-        cost_per_unit: Number(row[5]),
-        updated_at: String(row[6]),
+        cost_per_unit: Number(row[7]),
+        updated_at: String(row[8]),
         is_low_stock: current_stock <= reorder_level
       };
     });

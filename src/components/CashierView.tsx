@@ -61,7 +61,6 @@ export const CashierView: React.FC<CashierViewProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [cart, setCart] = useState<{ [itemId: string]: { item: MenuItem; quantity: number } }>({});
-  const [hasSeededInitialCart, setHasSeededInitialCart] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -77,23 +76,13 @@ export const CashierView: React.FC<CashierViewProps> = ({
   const [activeUpiIntent, setActiveUpiIntent] = useState<UpiPaymentIntent | null>(null);
 
   useEffect(() => {
-    if (!hasSeededInitialCart && catalog.length >= 3) {
-      setCart({
-        [catalog[0].item_id]: { item: catalog[0], quantity: 1 },
-        [catalog[2].item_id]: { item: catalog[2], quantity: 2 },
-      });
-      setHasSeededInitialCart(true);
-    }
-  }, [catalog, hasSeededInitialCart]);
-
-  useEffect(() => {
     if (initialTableId) {
       setSelectedTable(initialTableId);
       setOrderType('DINE_IN');
     }
   }, [initialTableId]);
 
-  const categories = ['All', 'North Indian', 'Tandoor', 'Rice & Biryani', 'Beverages', 'Desserts'];
+  const categories = ['All', ...Array.from(new Set(catalog.map((i) => i.category).filter(Boolean)))];
 
   const filteredItems = catalog.filter((item) => {
     const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
@@ -103,6 +92,7 @@ export const CashierView: React.FC<CashierViewProps> = ({
   });
 
   const addToCart = (item: MenuItem) => {
+    if (!item || typeof item.price !== 'number') return;
     setCart((prev) => {
       const existing = prev[item.item_id];
       if (existing) {
@@ -143,8 +133,8 @@ export const CashierView: React.FC<CashierViewProps> = ({
     });
   };
 
-  const cartList = Object.values(cart).filter((entry) => Boolean(entry && entry.item));
-  const subTotal = cartList.reduce((sum, entry) => sum + entry.item.price * entry.quantity, 0);
+  const cartList = Object.values(cart).filter((entry) => Boolean(entry && entry.item && typeof entry.item.price === 'number'));
+  const subTotal = cartList.reduce((sum, entry) => sum + ((Number(entry.item?.price) || 0) * (Number(entry.quantity) || 1)), 0);
 
   const selectedCustomer = customers.find((c) => c.customer_id === selectedCustomerId) || null;
   const maxRedeemablePoints = selectedCustomer
@@ -189,7 +179,7 @@ export const CashierView: React.FC<CashierViewProps> = ({
 
     const orderInput: OrderInput = {
       order_id: orderId,
-      outlet_id: 'OUTLET-BLR-01',
+      outlet_id: 'OUTLET-IMF-01',
       terminal_id: 'POS-01',
       table_id: orderType === 'DINE_IN' ? selectedTable : undefined,
       invoice_number: invoiceNumber,
@@ -297,26 +287,44 @@ export const CashierView: React.FC<CashierViewProps> = ({
               <div
                 key={item.item_id}
                 onClick={() => addToCart(item)}
-                className="bg-white p-4 rounded-lg border border-slate-200 hover:border-slate-400 cursor-pointer transition-all flex flex-col justify-between group shadow-2xs"
+                className="bg-white p-3 rounded-lg border border-slate-200 hover:border-slate-400 active:scale-[0.98] cursor-pointer transition-all duration-100 flex flex-col justify-between group shadow-2xs"
               >
                 <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
+                  {/* Dish Photography Thumbnail */}
+                  <div className="relative aspect-video w-full rounded-md overflow-hidden bg-slate-100 mb-2.5">
+                    <img
+                      src={item.image_url || 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80'}
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80';
+                      }}
+                    />
+                    <div className="absolute top-2 left-2 flex items-center gap-1.5">
                       <span
-                        className={`w-2 h-2 rounded-xs inline-block ${
+                        className={`w-2.5 h-2.5 rounded-xs shadow-xs ${
                           item.is_veg ? 'bg-emerald-600' : 'bg-red-600'
                         }`}
                         title={item.is_veg ? 'Vegetarian' : 'Non-Vegetarian'}
                       />
-                      <h4 className="text-sm font-bold text-slate-900 tracking-tight group-hover:text-orange-600 transition-colors">
-                        {item.name}
-                      </h4>
+                      {item.portion_size && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-900/80 text-white backdrop-blur-xs font-mono">
+                          {item.portion_size}
+                        </span>
+                      )}
                     </div>
                     {inCartQty > 0 && (
-                      <span className="text-xs font-bold text-orange-600 font-mono">
-                        x{inCartQty}
-                      </span>
+                      <div className="absolute top-2 right-2 bg-orange-600 text-white font-mono font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center shadow-md animate-in zoom-in-75">
+                        {inCartQty}
+                      </div>
                     )}
+                  </div>
+
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="text-sm font-bold text-slate-900 tracking-tight group-hover:text-orange-600 transition-colors">
+                      {item.name}
+                    </h4>
                   </div>
                   <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                     {item.description}

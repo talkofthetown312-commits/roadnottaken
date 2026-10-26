@@ -393,5 +393,96 @@ export class EscPosBuilder {
       hexPreview
     };
   }
+
+  /**
+   * Builds official Goods Received Note (GRN) inventory inwarding audit slip
+   */
+  public static buildGrnReceipt(
+    grn: import('./types.js').GoodsReceivedNote,
+    outletHeader: { name: string; address: string; gstin: string }
+  ): { buffer: Buffer; formattedText: string; hexPreview: string } {
+    const builder = new EscPosBuilder(48);
+
+    builder
+      .beep()
+      .align('CENTER')
+      .bold(true)
+      .size('DOUBLE_HEIGHT')
+      .textLine('GOODS RECEIVED NOTE (GRN)')
+      .size('NORMAL')
+      .bold(false)
+      .textLine(outletHeader.name)
+      .textLine(`GSTIN: ${outletHeader.gstin}`)
+      .divider('=')
+      .align('LEFT')
+      .keyValueLine(`GRN No: ${grn.grn_number}`, `PO Ref: ${grn.po_number}`)
+      .keyValueLine(`Supplier: ${grn.supplier_name.slice(0, 22)}`, `Inv: ${grn.invoice_ref_number}`)
+      .keyValueLine(`Received By: ${grn.received_by}`, `Time: ${new Date(grn.received_at).toLocaleTimeString()}`)
+      .divider('-')
+      .bold(true)
+      .textLine(`${'ITEM / UNIT'.padEnd(26, ' ')} ${'RECVD'.padStart(8, ' ')} ${'COST'.padStart(12, ' ')}`)
+      .bold(false)
+      .divider('-');
+
+    for (const item of grn.items) {
+      builder.keyValueLine(
+        `${item.ingredient_name.slice(0, 22)} (${item.unit})`,
+        `${item.received_quantity} @ Rs.${item.unit_price}`
+      );
+    }
+
+    builder
+      .divider('=')
+      .bold(true)
+      .size('DOUBLE_HEIGHT')
+      .keyValueLine('INWARD TOTAL:', `Rs. ${grn.total_received_cost.toFixed(2)}`)
+      .size('NORMAL')
+      .bold(false)
+      .divider('-')
+      .textLine(`Audit Status: [ ${grn.status} ]`)
+      .textLine(`Remarks: ${grn.discrepancy_note || 'Inspected and accepted into stock'}`)
+      .divider('=')
+      .align('CENTER')
+      .textLine('Store Keeper: __________________')
+      .textLine('--- Road Not Taken Procurement ERP ---')
+      .cut();
+
+    const buffer = builder.build();
+
+    const lines = [
+      `================================================`,
+      `           GOODS RECEIVED NOTE (GRN)            `,
+      `               ${outletHeader.name}               `,
+      `              GSTIN: ${outletHeader.gstin}             `,
+      `================================================`,
+      `GRN: ${grn.grn_number.padEnd(23)} PO: ${grn.po_number}`,
+      `Supplier: ${grn.supplier_name.slice(0, 20).padEnd(20)} Inv: ${grn.invoice_ref_number}`,
+      `Received By: ${grn.received_by.padEnd(17)} Time: ${new Date(grn.received_at).toLocaleTimeString()}`,
+      `------------------------------------------------`,
+      `ITEM / UNIT                     RECVD       COST`,
+      `------------------------------------------------`,
+      ...grn.items.map(
+        (i) => `${(i.ingredient_name.slice(0, 20) + ` (${i.unit})`).padEnd(27)} ${String(i.received_quantity).padStart(7)} ${i.total_cost.toFixed(2).padStart(12)}`
+      ),
+      `================================================`,
+      `INWARD TOTAL:                       Rs. ${grn.total_received_cost.toFixed(2).padStart(8)}`,
+      `------------------------------------------------`,
+      `Status: [ ${grn.status} ]`,
+      `Notes: ${grn.discrepancy_note || 'All items inspected and weighted average cost updated.'}`,
+      `================================================`,
+      `Store Keeper: __________________`,
+      `[ STOCK INWARD ATOMIC TRANSACTION COMMITTED ]`,
+      `--- Road Not Taken Procurement ERP ---`
+    ];
+
+    const hexPreview = buffer.slice(0, 64).toString('hex').toUpperCase().match(/.{1,2}/g)?.join(' ') + ' ...';
+
+    return {
+      buffer,
+      formattedText: lines.join('\n'),
+      hexPreview
+    };
+  }
 }
+
 

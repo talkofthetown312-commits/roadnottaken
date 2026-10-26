@@ -28,7 +28,7 @@ export const NetworkSubBar: React.FC<NetworkSubBarProps> = ({
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-slate-100">Edge Terminal:</span>
-          <span className="text-slate-400">OUTLET-BLR-01</span>
+          <span className="text-slate-400">OUTLET-IMF-01</span>
           <span className="text-slate-600" aria-hidden="true">·</span>
           <span className="text-slate-400">POS-TERMINAL-01</span>
           <span className="text-slate-600" aria-hidden="true">·</span>

@@ -8,6 +8,12 @@ import { InventoryView } from './components/InventoryView';
 import { ShiftManagementView } from './components/ShiftManagementView';
 import { CloudSyncView } from './components/CloudSyncView';
 import { ThermalReceiptModal } from './components/ThermalReceiptModal';
+import { RestaurantProfileModal } from './components/RestaurantProfileModal';
+import { ProcurementView } from './components/ProcurementView';
+import { KioskView } from './components/KioskView';
+import { SalaryManagementView } from './components/SalaryManagementView';
+import { RuleBookView } from './components/RuleBookView';
+import { AssistantView } from './components/AssistantView';
 import {
   MenuItem,
   OrderInput,
@@ -22,7 +28,15 @@ import {
   DiningTable,
   PaymentMethod,
   CustomerProfile,
-  UpiPaymentIntent
+  UpiPaymentIntent,
+  RestaurantProfile,
+  Supplier,
+  PurchaseOrder,
+  GoodsReceivedNote,
+  StaffMember,
+  PayrollRecord,
+  StaffRole,
+  SopChecklistItem
 } from './server/types';
 
 export default function App() {
@@ -59,6 +73,18 @@ export default function App() {
   const [webhookLogs, setWebhookLogs] = useState<WebhookLog[]>([]);
   const [selectedPrintJob, setSelectedPrintJob] = useState<PrintSpoolJob | null>(null);
 
+  // Restaurant Profile & Procurement Inwarding
+  const [restaurantProfile, setRestaurantProfile] = useState<RestaurantProfile | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+  const [grnList, setGrnList] = useState<GoodsReceivedNote[]>([]);
+
+  // Staff, Payroll & SOP Checklists
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [payrollList, setPayrollList] = useState<PayrollRecord[]>([]);
+  const [sopList, setSopList] = useState<SopChecklistItem[]>([]);
+
   const fetchBootstrapData = useCallback(async () => {
     try {
       const res = await fetch('/api/bootstrap');
@@ -85,8 +111,15 @@ export default function App() {
         activeOutletsCount: 1,
       });
       setWebhookLogs(data.webhookLogs || []);
+      setRestaurantProfile(data.restaurantProfile || null);
+      setSuppliers(data.suppliers || []);
+      setPurchaseOrders(data.purchaseOrders || []);
+      setGrnList(data.grnList || []);
+      setStaffList(data.staffList || []);
+      setPayrollList(data.payrollList || []);
+      setSopList(data.sopList || []);
     } catch (err) {
-      console.warn('[Petpooja App] Bootstrap fetch warning:', err);
+      console.warn('[Road Not Taken POS] Bootstrap fetch warning:', err);
     }
   }, []);
 
@@ -307,6 +340,153 @@ export default function App() {
     return data.intent;
   };
 
+  // Restaurant Profile Update Handler
+  const handleUpdateProfile = async (updated: Partial<RestaurantProfile>) => {
+    const res = await fetch('/api/restaurant-profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated),
+    });
+    const data = await res.json();
+    if (data.profile) {
+      setRestaurantProfile(data.profile);
+    }
+    await fetchBootstrapData();
+  };
+
+  // Procurement & GRN Handlers
+  const handleCreatePO = async (poData: {
+    supplier_id: string;
+    notes?: string;
+    expected_delivery_date: string;
+    items: Array<{ ingredient_id: string; ordered_quantity: number; unit_price: number }>;
+  }) => {
+    const res = await fetch('/api/procurement/purchase-orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(poData),
+    });
+    const data = await res.json();
+    await fetchBootstrapData();
+    return data;
+  };
+
+  const handleReceiveGrn = async (grnData: {
+    po_id: string;
+    invoice_ref_number: string;
+    received_by: string;
+    discrepancy_note?: string;
+    items: Array<{
+      ingredient_id: string;
+      received_quantity: number;
+      rejected_quantity?: number;
+      unit_price: number;
+      remarks?: string;
+    }>;
+  }) => {
+    const res = await fetch('/api/procurement/grn/receive', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(grnData),
+    });
+    const data = await res.json();
+    if (data.spoolJob) {
+      setSelectedPrintJob(data.spoolJob);
+    }
+    await fetchBootstrapData();
+    return data;
+  };
+
+  const handleCreateSupplier = async (
+    suppData: Omit<Supplier, 'supplier_id' | 'rating' | 'is_active'>
+  ) => {
+    const res = await fetch('/api/procurement/suppliers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(suppData),
+    });
+    const data = await res.json();
+    await fetchBootstrapData();
+    return data;
+  };
+
+  // Kiosk Order Placement
+  const handlePlaceKioskOrder = async (order: OrderInput) => {
+    const res = await fetch('/api/kiosk/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order),
+    });
+    const data = await res.json();
+    await fetchBootstrapData();
+    return data;
+  };
+
+  // Staff & Payroll Handlers
+  const handleAddStaff = async (staffData: {
+    name: string;
+    role: StaffRole;
+    phone: string;
+    monthly_base_salary: number;
+    bank_account_info?: string;
+  }) => {
+    await fetch('/api/staff', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(staffData),
+    });
+    await fetchBootstrapData();
+  };
+
+  const handleRecordPayroll = async (payrollData: {
+    staff_id: string;
+    month: string;
+    days_worked: number;
+    overtime_hours: number;
+    advance_deductions: number;
+    bonus: number;
+    payment_method: 'BANK_TRANSFER' | 'CASH' | 'UPI';
+  }) => {
+    const res = await fetch('/api/payroll/payout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payrollData),
+    });
+    const data = await res.json();
+    await fetchBootstrapData();
+    return data;
+  };
+
+  // SOP Checklist Handler
+  const handleToggleChecklist = async (id: string, completed: boolean) => {
+    await fetch('/api/sop/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, completed, completed_by: 'Duty Manager' }),
+    });
+    await fetchBootstrapData();
+  };
+
+  const currentProfile: RestaurantProfile = restaurantProfile || {
+    profile_id: 'main-profile',
+    restaurant_name: 'Talk of the Town',
+    outlet_name: 'Imphal Main Outlet',
+    address: 'Imphal, Manipur',
+    gstin: '14AABCT9988Z1Z5',
+    fssai_licence: '21623001000452',
+    phone: '+91 98765 43210',
+    email: 'talkofthetown312@gmail.com',
+    currency_symbol: '₹',
+    tax_cgst_rate: 2.5,
+    tax_sgst_rate: 2.5,
+    kiosk_idle_timeout_seconds: 60,
+    printer_ip: '192.168.1.100',
+    printer_port: 9100,
+    printer_paper_width: '80mm',
+    merchant_upi_vpa: 'talkofthetown@upi',
+    updated_at: new Date().toISOString()
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 font-sans selection:bg-orange-500/20 selection:text-orange-900">
       {/* 3-Zone Top Bar */}
@@ -314,6 +494,8 @@ export default function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onSimulateWebhook={handleSimulateWebhook}
+        restaurantProfile={currentProfile}
+        onOpenProfileSettings={() => setShowProfileModal(true)}
       />
 
       {/* Edge Node & Outbox Sync Sub-Bar */}
@@ -343,6 +525,14 @@ export default function App() {
             onVerifyUpiSoundbox={handleVerifyUpiSoundbox}
             onViewPrintJob={(job) => setSelectedPrintJob(job)}
             recentJobs={spoolJobs}
+          />
+        )}
+
+        {activeTab === 'kiosk' && (
+          <KioskView
+            catalog={catalog}
+            restaurantProfile={currentProfile}
+            onPlaceKioskOrder={handlePlaceKioskOrder}
           />
         )}
 
@@ -379,6 +569,19 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'procurement' && (
+          <ProcurementView
+            suppliers={suppliers}
+            purchaseOrders={purchaseOrders}
+            grnList={grnList}
+            inventory={inventory}
+            onCreatePO={handleCreatePO}
+            onReceiveGrn={handleReceiveGrn}
+            onCreateSupplier={handleCreateSupplier}
+            onViewPrintJob={(job) => setSelectedPrintJob(job)}
+          />
+        )}
+
         {activeTab === 'shifts' && (
           <ShiftManagementView
             activeShift={activeShift}
@@ -388,6 +591,27 @@ export default function App() {
             onCloseBlindDrop={handleCloseBlindDrop}
             onViewPrintJob={(job) => setSelectedPrintJob(job)}
           />
+        )}
+
+        {activeTab === 'salary' && (
+          <SalaryManagementView
+            staffList={staffList}
+            payrollList={payrollList}
+            onAddStaff={handleAddStaff}
+            onRecordPayroll={handleRecordPayroll}
+            onViewPrintJob={(job) => setSelectedPrintJob(job)}
+          />
+        )}
+
+        {activeTab === 'rules' && (
+          <RuleBookView
+            checklists={sopList}
+            onToggleChecklist={handleToggleChecklist}
+          />
+        )}
+
+        {activeTab === 'assistant' && (
+          <AssistantView restaurantProfile={currentProfile} />
         )}
 
         {activeTab === 'cloud' && (
@@ -401,6 +625,15 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Restaurant Profile Configuration Modal */}
+      {showProfileModal && (
+        <RestaurantProfileModal
+          profile={currentProfile}
+          onSave={handleUpdateProfile}
+          onClose={() => setShowProfileModal(false)}
+        />
+      )}
 
       {/* Thermal Paper Slip Modal Previewer */}
       <ThermalReceiptModal

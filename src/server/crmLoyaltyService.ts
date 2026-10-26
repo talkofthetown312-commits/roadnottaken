@@ -3,11 +3,26 @@ import { CustomerProfile, CustomerTier, LoyaltyLedgerEntry, UpiPaymentIntent } f
 
 export class CrmLoyaltyService {
   private db: Database;
-  private readonly merchantVpa = 'petpooja.saffron@okaxis';
-  private readonly merchantName = 'Saffron Spice Fine Dine';
+  private readonly defaultMerchantVpa = 'roadnottaken.pay@okaxis';
 
   constructor(db: Database) {
     this.db = db;
+  }
+
+  private getMerchantInfo(): { name: string; vpa: string } {
+    try {
+      const res = this.db.exec(`SELECT restaurant_name FROM restaurant_profile LIMIT 1`);
+      if (res[0] && res[0].values && res[0].values[0]) {
+        return {
+          name: String(res[0].values[0][0]),
+          vpa: this.defaultMerchantVpa
+        };
+      }
+    } catch {}
+    return {
+      name: 'The Rustic Table Bistro',
+      vpa: this.defaultMerchantVpa
+    };
   }
 
   /**
@@ -149,21 +164,22 @@ export class CrmLoyaltyService {
     const inv = invoiceNumber || `INV-${Date.now().toString().slice(-6)}`;
     const intentId = `upi-int-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    const encodedName = encodeURIComponent(this.merchantName);
-    const upiUri = `upi://pay?pa=${this.merchantVpa}&pn=${encodedName}&am=${cleanAmount.toFixed(2)}&tr=${inv}&tn=${encodeURIComponent(`Bill ${inv}`)}&cu=INR`;
+    const merchant = this.getMerchantInfo();
+    const encodedName = encodeURIComponent(merchant.name);
+    const upiUri = `upi://pay?pa=${merchant.vpa}&pn=${encodedName}&am=${cleanAmount.toFixed(2)}&tr=${inv}&tn=${encodeURIComponent(`Bill ${inv}`)}&cu=INR`;
 
     this.db.run(
       `INSERT INTO upi_payment_intents (
         intent_id, invoice_number, merchant_vpa, merchant_name, amount, upi_uri, status, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, 'AWAITING_PAYMENT', CURRENT_TIMESTAMP)`,
-      [intentId, inv, this.merchantVpa, this.merchantName, cleanAmount, upiUri]
+      [intentId, inv, merchant.vpa, merchant.name, cleanAmount, upiUri]
     );
 
     return {
       intent_id: intentId,
       invoice_number: inv,
-      merchant_vpa: this.merchantVpa,
-      merchant_name: this.merchantName,
+      merchant_vpa: merchant.vpa,
+      merchant_name: merchant.name,
       amount: cleanAmount,
       upi_uri: upiUri,
       status: 'AWAITING_PAYMENT',
@@ -192,7 +208,7 @@ export class CrmLoyaltyService {
     const utrNumber = `4295${Math.floor(10000000 + Math.random() * 90000000)}`;
     const resolvedPayerVpa = payerVpa || 'customer.gpay@okicici';
     const verifiedAt = new Date().toISOString();
-    const announcement = `Received Rupees ${amount.toFixed(0)} on Petpooja Soundbox. NPCI UTR ending ${utrNumber.slice(-4)}.`;
+    const announcement = `Received Rupees ${amount.toFixed(0)} on Road Not Taken Soundbox. NPCI UTR ending ${utrNumber.slice(-4)}.`;
 
     this.db.run(
       `UPDATE upi_payment_intents

@@ -1,80 +1,452 @@
 import initSqlJs, { Database } from 'sql.js';
+import fs from 'fs';
+import path from 'path';
 import { MenuItem } from './types.js';
 
 export const CATALOG_ITEMS: MenuItem[] = [
+  // CHOWMEIN
   {
-    item_id: 'item-001',
-    name: 'Paneer Butter Masala',
-    category: 'North Indian',
-    price: 340,
+    item_id: 'cm-veg-s',
+    name: 'Veg Chowmein (Small)',
+    base_item: 'Veg Chowmein',
+    portion_size: 'Small',
+    category: 'Chowmein',
+    price: 40,
     is_veg: true,
     station: 'KITCHEN',
-    description: 'Cottage cheese cubes tossed in rich tomato-cashew satin gravy'
+    description: 'Wok-tossed noodles with fresh shredded cabbage, carrots, capsicum, and house sauce blend',
+    barcode: '8903001001011'
   },
   {
-    item_id: 'item-002',
-    name: 'Dal Makhani',
-    category: 'North Indian',
-    price: 280,
+    item_id: 'cm-veg-m',
+    name: 'Veg Chowmein (Medium)',
+    base_item: 'Veg Chowmein',
+    portion_size: 'Medium',
+    category: 'Chowmein',
+    price: 50,
     is_veg: true,
     station: 'KITCHEN',
-    description: 'Slow-cooked black lentils simmered overnight with churned butter'
+    description: 'Wok-tossed noodles with fresh shredded cabbage, carrots, capsicum, and house sauce blend',
+    barcode: '8903001001028'
   },
   {
-    item_id: 'item-003',
-    name: 'Butter Naan',
-    category: 'Tandoor',
-    price: 65,
-    is_veg: true,
-    station: 'TANDOOR',
-    description: 'Leavened flatbread baked crisp in charcoal clay tandoor'
-  },
-  {
-    item_id: 'item-004',
-    name: 'Chicken Dum Biryani',
-    category: 'Rice & Biryani',
-    price: 420,
-    is_veg: false,
-    station: 'KITCHEN',
-    description: 'Aromatic aged basmati rice cooked on dum with marinated chicken'
-  },
-  {
-    item_id: 'item-005',
-    name: 'Paneer Tikka (6 Pcs)',
-    category: 'Tandoor',
-    price: 320,
-    is_veg: true,
-    station: 'TANDOOR',
-    description: 'Spiced yogurt marinated paneer skewers with bell peppers'
-  },
-  {
-    item_id: 'item-006',
-    name: 'Fresh Mango Lassi',
-    category: 'Beverages',
-    price: 140,
-    is_veg: true,
-    station: 'BAR',
-    description: 'Thick churned sweet yogurt blended with Alphonso pulp'
-  },
-  {
-    item_id: 'item-007',
-    name: 'Cutting Masala Chai',
-    category: 'Beverages',
-    price: 60,
-    is_veg: true,
-    station: 'BAR',
-    description: 'Brewed Assam tea leaves with crushed ginger and green cardamom'
-  },
-  {
-    item_id: 'item-008',
-    name: 'Gulab Jamun (2 Pcs)',
-    category: 'Desserts',
+    item_id: 'cm-veg-l',
+    name: 'Veg Chowmein (Large)',
+    base_item: 'Veg Chowmein',
+    portion_size: 'Large',
+    category: 'Chowmein',
     price: 110,
     is_veg: true,
     station: 'KITCHEN',
-    description: 'Golden mawa dumplings soaked in warm saffron-cardamom syrup'
+    description: 'Generous sharing portion of wok-tossed noodles with fresh seasonal vegetables',
+    barcode: '8903001001035'
+  },
+  {
+    item_id: 'cm-egg-s',
+    name: 'Egg Chowmein (Small)',
+    base_item: 'Egg Chowmein',
+    portion_size: 'Small',
+    category: 'Chowmein',
+    price: 40,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Stir-fried noodles with scrambled farm-fresh eggs and crunchy vegetables',
+    barcode: '8903001002018'
+  },
+  {
+    item_id: 'cm-egg-m',
+    name: 'Egg Chowmein (Medium)',
+    base_item: 'Egg Chowmein',
+    portion_size: 'Medium',
+    category: 'Chowmein',
+    price: 60,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Stir-fried noodles with scrambled farm-fresh eggs and crunchy vegetables',
+    barcode: '8903001002025'
+  },
+  {
+    item_id: 'cm-egg-l',
+    name: 'Egg Chowmein (Large)',
+    base_item: 'Egg Chowmein',
+    portion_size: 'Large',
+    category: 'Chowmein',
+    price: 130,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Large wok-tossed egg chowmein loaded with eggs, onions, and garlic greens',
+    barcode: '8903001002032'
+  },
+  {
+    item_id: 'cm-chk-s',
+    name: 'Chicken Chowmein (Small)',
+    base_item: 'Chicken Chowmein',
+    portion_size: 'Small',
+    category: 'Chowmein',
+    price: 50,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Tender chicken slices stir-fried with noodles, garlic, and savory Asian sauces',
+    barcode: '8903001003015'
+  },
+  {
+    item_id: 'cm-chk-m',
+    name: 'Chicken Chowmein (Medium)',
+    base_item: 'Chicken Chowmein',
+    portion_size: 'Medium',
+    category: 'Chowmein',
+    price: 80,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Tender chicken slices stir-fried with noodles, garlic, and savory Asian sauces',
+    barcode: '8903001003022'
+  },
+  {
+    item_id: 'cm-chk-l',
+    name: 'Chicken Chowmein (Large)',
+    base_item: 'Chicken Chowmein',
+    portion_size: 'Large',
+    category: 'Chowmein',
+    price: 150,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Full-size wok of seasoned chicken chowmein with spring onions and black pepper',
+    barcode: '8903001003039'
+  },
+  {
+    item_id: 'cm-prk-s',
+    name: 'Pork Chowmein (Small)',
+    base_item: 'Pork Chowmein',
+    portion_size: 'Small',
+    category: 'Chowmein',
+    price: 60,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Succulent pork cuts wok-tossed with noodles, fresh ginger, and dark soy',
+    barcode: '8903001004012'
+  },
+  {
+    item_id: 'cm-prk-m',
+    name: 'Pork Chowmein (Medium)',
+    base_item: 'Pork Chowmein',
+    portion_size: 'Medium',
+    category: 'Chowmein',
+    price: 90,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Succulent pork cuts wok-tossed with noodles, fresh ginger, and dark soy',
+    barcode: '8903001004029'
+  },
+  {
+    item_id: 'cm-prk-l',
+    name: 'Pork Chowmein (Large)',
+    base_item: 'Pork Chowmein',
+    portion_size: 'Large',
+    category: 'Chowmein',
+    price: 160,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Large sharing serving of spiced pork chowmein with crispy veggies',
+    barcode: '8903001004036'
+  },
+  {
+    item_id: 'cm-mix-s',
+    name: 'Mixed Chowmein (Small)',
+    base_item: 'Mixed Chowmein',
+    portion_size: 'Small',
+    category: 'Chowmein',
+    price: 50,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Combination of chicken, egg, and vegetables tossed in high-flame wok',
+    barcode: '8903001005019'
+  },
+  {
+    item_id: 'cm-mix-m',
+    name: 'Mixed Chowmein (Medium)',
+    base_item: 'Mixed Chowmein',
+    portion_size: 'Medium',
+    category: 'Chowmein',
+    price: 80,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Combination of chicken, egg, and vegetables tossed in high-flame wok',
+    barcode: '8903001005026'
+  },
+  {
+    item_id: 'cm-mix-l',
+    name: 'Mixed Chowmein (Large)',
+    base_item: 'Mixed Chowmein',
+    portion_size: 'Large',
+    category: 'Chowmein',
+    price: 200,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Deluxe mixed chowmein with chicken, pork, egg, and assorted greens',
+    barcode: '8903001005033'
+  },
+
+  // FRIED RICE
+  {
+    item_id: 'fr-veg-s',
+    name: 'Veg Fried Rice (Small)',
+    base_item: 'Veg Fried Rice',
+    portion_size: 'Small',
+    category: 'Fried Rice',
+    price: 30,
+    is_veg: true,
+    station: 'KITCHEN',
+    description: 'Fragrant steamed rice tossed with diced carrots, beans, cabbage, and light seasoning',
+    barcode: '8903002001010'
+  },
+  {
+    item_id: 'fr-veg-m',
+    name: 'Veg Fried Rice (Medium)',
+    base_item: 'Veg Fried Rice',
+    portion_size: 'Medium',
+    category: 'Fried Rice',
+    price: 50,
+    is_veg: true,
+    station: 'KITCHEN',
+    description: 'Fragrant steamed rice tossed with diced carrots, beans, cabbage, and light seasoning',
+    barcode: '8903002001027'
+  },
+  {
+    item_id: 'fr-veg-l',
+    name: 'Veg Fried Rice (Large)',
+    base_item: 'Veg Fried Rice',
+    portion_size: 'Large',
+    category: 'Fried Rice',
+    price: 130,
+    is_veg: true,
+    station: 'KITCHEN',
+    description: 'Large family portion of garden-fresh vegetable fried rice',
+    barcode: '8903002001034'
+  },
+  {
+    item_id: 'fr-egg-s',
+    name: 'Egg Fried Rice (Small)',
+    base_item: 'Egg Fried Rice',
+    portion_size: 'Small',
+    category: 'Fried Rice',
+    price: 40,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Classic wok-fried rice with fluffy scrambled egg ribbons and spring onions',
+    barcode: '8903002002017'
+  },
+  {
+    item_id: 'fr-egg-m',
+    name: 'Egg Fried Rice (Medium)',
+    base_item: 'Egg Fried Rice',
+    portion_size: 'Medium',
+    category: 'Fried Rice',
+    price: 60,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Classic wok-fried rice with fluffy scrambled egg ribbons and spring onions',
+    barcode: '8903002002024'
+  },
+  {
+    item_id: 'fr-egg-l',
+    name: 'Egg Fried Rice (Large)',
+    base_item: 'Egg Fried Rice',
+    portion_size: 'Large',
+    category: 'Fried Rice',
+    price: 140,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Large serving of egg fried rice seasoned with white pepper and garlic',
+    barcode: '8903002002031'
+  },
+  {
+    item_id: 'fr-chk-s',
+    name: 'Chicken Fried Rice (Small)',
+    base_item: 'Chicken Fried Rice',
+    portion_size: 'Small',
+    category: 'Fried Rice',
+    price: 50,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Steamed rice tossed with marinated diced chicken, crushed garlic, and greens',
+    barcode: '8903002003014'
+  },
+  {
+    item_id: 'fr-chk-m',
+    name: 'Chicken Fried Rice (Medium)',
+    base_item: 'Chicken Fried Rice',
+    portion_size: 'Medium',
+    category: 'Fried Rice',
+    price: 70,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Steamed rice tossed with marinated diced chicken, crushed garlic, and greens',
+    barcode: '8903002003021'
+  },
+  {
+    item_id: 'fr-chk-l',
+    name: 'Chicken Fried Rice (Large)',
+    base_item: 'Chicken Fried Rice',
+    portion_size: 'Large',
+    category: 'Fried Rice',
+    price: 160,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Generous portion of aromatic chicken fried rice with spring onions and garlic',
+    barcode: '8903002003038'
+  },
+  {
+    item_id: 'fr-prk-s',
+    name: 'Pork Fried Rice (Small)',
+    base_item: 'Pork Fried Rice',
+    portion_size: 'Small',
+    category: 'Fried Rice',
+    price: 60,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Tender pork bits tossed with seasoned wok rice and crisp garden vegetables',
+    barcode: '8903002004011'
+  },
+  {
+    item_id: 'fr-prk-m',
+    name: 'Pork Fried Rice (Medium)',
+    base_item: 'Pork Fried Rice',
+    portion_size: 'Medium',
+    category: 'Fried Rice',
+    price: 90,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Tender pork bits tossed with seasoned wok rice and crisp garden vegetables',
+    barcode: '8903002004028'
+  },
+  {
+    item_id: 'fr-prk-l',
+    name: 'Pork Fried Rice (Large)',
+    base_item: 'Pork Fried Rice',
+    portion_size: 'Large',
+    category: 'Fried Rice',
+    price: 170,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Hearty full portion of pork fried rice with house chilli blend',
+    barcode: '8903002004035'
+  },
+  {
+    item_id: 'fr-mix-s',
+    name: 'Mixed Fried Rice (Small)',
+    base_item: 'Mixed Fried Rice',
+    portion_size: 'Small',
+    category: 'Fried Rice',
+    price: 50,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Combination of chicken, egg, and fresh veggies tossed with seasoned rice',
+    barcode: '8903002005018'
+  },
+  {
+    item_id: 'fr-mix-m',
+    name: 'Mixed Fried Rice (Medium)',
+    base_item: 'Mixed Fried Rice',
+    portion_size: 'Medium',
+    category: 'Fried Rice',
+    price: 80,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Combination of chicken, egg, and fresh veggies tossed with seasoned rice',
+    barcode: '8903002005025'
+  },
+  {
+    item_id: 'fr-mix-l',
+    name: 'Mixed Fried Rice (Large)',
+    base_item: 'Mixed Fried Rice',
+    portion_size: 'Large',
+    category: 'Fried Rice',
+    price: 210,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Signature mixed fried rice loaded with chicken, pork, eggs, and crispy greens',
+    barcode: '8903002005032'
+  },
+
+  // CHILLY STARTERS (Fixed Full Size)
+  {
+    item_id: 'chl-chk-dry',
+    name: 'Chicken Chilly Dry',
+    base_item: 'Chicken Chilly Dry',
+    portion_size: 'Full',
+    category: 'Chilly Starters',
+    price: 250,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Crispy fried chicken chunks tossed with diced onions, capsicum, green chillies, and dark soy',
+    barcode: '8903003001019'
+  },
+  {
+    item_id: 'chl-chk-grv',
+    name: 'Chicken Chilly Gravy',
+    base_item: 'Chicken Chilly Gravy',
+    portion_size: 'Full',
+    category: 'Chilly Starters',
+    price: 260,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Fried chicken pieces simmered in spicy, tangy garlic-soy gravy with capsicum and spring onion',
+    barcode: '8903003001026'
+  },
+  {
+    item_id: 'chl-prk-dry',
+    name: 'Pork Chilly Dry',
+    base_item: 'Pork Chilly Dry',
+    portion_size: 'Full',
+    category: 'Chilly Starters',
+    price: 280,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Crispy seasoned pork bites dry-tossed in high flame with ginger, garlic, and fiery chillies',
+    barcode: '8903003002016'
+  },
+  {
+    item_id: 'chl-prk-grv',
+    name: 'Pork Chilly Gravy',
+    base_item: 'Pork Chilly Gravy',
+    portion_size: 'Full',
+    category: 'Chilly Starters',
+    price: 290,
+    is_veg: false,
+    station: 'KITCHEN',
+    description: 'Pork morsels simmered in rich oriental spiced gravy, perfect pairing with Chowmein or Rice',
+    barcode: '8903003002023'
   }
 ];
+
+const DISH_IMAGES: Record<string, string> = {
+  'cm-veg': 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80',
+  'cm-egg': 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=600&auto=format&fit=crop&q=80',
+  'cm-chk': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80',
+  'cm-prk': 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?w=600&auto=format&fit=crop&q=80',
+  'cm-mix': 'https://images.unsplash.com/photo-1552611052-33e04de081de?w=600&auto=format&fit=crop&q=80',
+  'fr-veg': 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80',
+  'fr-egg': 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&auto=format&fit=crop&q=80',
+  'fr-chk': 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?w=600&auto=format&fit=crop&q=80',
+  'fr-prk': 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=600&auto=format&fit=crop&q=80',
+  'fr-mix': 'https://images.unsplash.com/photo-1598514982205-f36b96d1e8d4?w=600&auto=format&fit=crop&q=80',
+  'chl-chk-dry': 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80',
+  'chl-chk-grv': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&auto=format&fit=crop&q=80',
+  'chl-prk-dry': 'https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=600&auto=format&fit=crop&q=80',
+  'chl-prk-grv': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80'
+};
+
+for (const item of CATALOG_ITEMS) {
+  for (const [prefix, imgUrl] of Object.entries(DISH_IMAGES)) {
+    if (item.item_id.startsWith(prefix)) {
+      item.image_url = imgUrl;
+      break;
+    }
+  }
+  if (!item.image_url) {
+    item.image_url = 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80';
+  }
+}
 
 let dbInstance: Database | null = null;
 
@@ -131,9 +503,12 @@ export async function getDatabase(): Promise<Database> {
       ingredient_id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       unit TEXT NOT NULL,
-      current_stock REAL NOT NULL,
-      reorder_level REAL NOT NULL,
-      cost_per_unit DECIMAL(10, 2) NOT NULL,
+      category TEXT,
+      treatment TEXT,
+      current_stock REAL NOT NULL DEFAULT 0,
+      reorder_level REAL NOT NULL DEFAULT 0,
+      cost_per_unit DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      barcode TEXT,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -204,7 +579,7 @@ export async function getDatabase(): Promise<Database> {
     CREATE TABLE IF NOT EXISTS print_spool_jobs (
       job_id TEXT PRIMARY KEY,
       order_id TEXT NOT NULL,
-      job_type TEXT NOT NULL CHECK(job_type IN ('KOT', 'RECEIPT', 'Z_REPORT')),
+      job_type TEXT NOT NULL CHECK(job_type IN ('KOT', 'RECEIPT', 'Z_REPORT', 'GRN_RECEIPT')),
       target_printer TEXT NOT NULL,
       status TEXT NOT NULL CHECK(status IN ('SENT', 'FAILED', 'RETRYING')),
       formatted_text TEXT NOT NULL,
@@ -297,16 +672,153 @@ export async function getDatabase(): Promise<Database> {
     );
   `);
 
+  // 8. Supplier & Procurement ERP Ledger (Milestone 12)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS suppliers (
+      supplier_id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      category TEXT NOT NULL,
+      contact_person TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT,
+      gstin TEXT NOT NULL,
+      payment_terms_days INTEGER NOT NULL DEFAULT 15,
+      rating REAL NOT NULL DEFAULT 4.5,
+      is_active INTEGER NOT NULL DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS purchase_orders (
+      po_id TEXT PRIMARY KEY,
+      po_number TEXT UNIQUE NOT NULL,
+      supplier_id TEXT NOT NULL,
+      supplier_name TEXT NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('DRAFT', 'ISSUED', 'PARTIALLY_RECEIVED', 'COMPLETED', 'CANCELLED')),
+      sub_total DECIMAL(10, 2) NOT NULL,
+      tax_total DECIMAL(10, 2) NOT NULL,
+      grand_total DECIMAL(10, 2) NOT NULL,
+      notes TEXT,
+      expected_delivery_date DATETIME NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS purchase_order_items (
+      po_item_id TEXT PRIMARY KEY,
+      po_id TEXT NOT NULL,
+      ingredient_id TEXT NOT NULL,
+      ingredient_name TEXT NOT NULL,
+      unit TEXT NOT NULL,
+      ordered_quantity REAL NOT NULL,
+      received_quantity REAL NOT NULL DEFAULT 0,
+      unit_price DECIMAL(10, 2) NOT NULL,
+      total_cost DECIMAL(10, 2) NOT NULL,
+      FOREIGN KEY (po_id) REFERENCES purchase_orders(po_id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS goods_received_notes (
+      grn_id TEXT PRIMARY KEY,
+      grn_number TEXT UNIQUE NOT NULL,
+      po_id TEXT NOT NULL,
+      po_number TEXT NOT NULL,
+      supplier_id TEXT NOT NULL,
+      supplier_name TEXT NOT NULL,
+      invoice_ref_number TEXT NOT NULL,
+      received_by TEXT NOT NULL,
+      total_received_cost DECIMAL(10, 2) NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('ACCEPTED', 'ACCEPTED_WITH_DISCREPANCY', 'REJECTED')),
+      discrepancy_note TEXT,
+      received_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (po_id) REFERENCES purchase_orders(po_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS grn_items (
+      grn_item_id TEXT PRIMARY KEY,
+      grn_id TEXT NOT NULL,
+      ingredient_id TEXT NOT NULL,
+      ingredient_name TEXT NOT NULL,
+      unit TEXT NOT NULL,
+      ordered_quantity REAL NOT NULL,
+      received_quantity REAL NOT NULL,
+      rejected_quantity REAL NOT NULL DEFAULT 0,
+      unit_price DECIMAL(10, 2) NOT NULL,
+      total_cost DECIMAL(10, 2) NOT NULL,
+      remarks TEXT,
+      FOREIGN KEY (grn_id) REFERENCES goods_received_notes(grn_id) ON DELETE CASCADE
+    );
+
+    -- 9. Configurable Restaurant & Outlet Profile (Separate from System Name)
+    CREATE TABLE IF NOT EXISTS restaurant_profile (
+      profile_id TEXT PRIMARY KEY,
+      restaurant_name TEXT NOT NULL,
+      outlet_name TEXT NOT NULL,
+      address TEXT NOT NULL,
+      gstin TEXT NOT NULL,
+      fssai_licence TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT,
+      currency_symbol TEXT NOT NULL DEFAULT '₹',
+      tax_cgst_rate REAL NOT NULL DEFAULT 2.5,
+      tax_sgst_rate REAL NOT NULL DEFAULT 2.5,
+      kiosk_idle_timeout_seconds INTEGER DEFAULT 60,
+      printer_ip TEXT DEFAULT '192.168.1.100',
+      printer_port INTEGER DEFAULT 9100,
+      printer_paper_width TEXT DEFAULT '80mm',
+      merchant_upi_vpa TEXT DEFAULT 'talkofthetown@upi',
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 10. Staff Members, Attendance & Payroll Ledger
+    CREATE TABLE IF NOT EXISTS staff_members (
+      staff_id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      role TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      monthly_base_salary DECIMAL(10, 2) NOT NULL,
+      daily_wage_rate DECIMAL(10, 2) NOT NULL,
+      bank_account_info TEXT,
+      joining_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      is_active INTEGER NOT NULL DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS payroll_ledger (
+      payroll_id TEXT PRIMARY KEY,
+      staff_id TEXT NOT NULL,
+      staff_name TEXT NOT NULL,
+      role TEXT NOT NULL,
+      month TEXT NOT NULL,
+      base_salary DECIMAL(10, 2) NOT NULL,
+      days_worked INTEGER NOT NULL DEFAULT 30,
+      overtime_hours REAL NOT NULL DEFAULT 0,
+      overtime_pay DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      advance_deductions DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      bonus DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      net_payout DECIMAL(10, 2) NOT NULL,
+      payment_status TEXT NOT NULL CHECK(payment_status IN ('PAID', 'PENDING')),
+      payment_method TEXT NOT NULL CHECK(payment_method IN ('BANK_TRANSFER', 'CASH', 'UPI')),
+      paid_at DATETIME,
+      FOREIGN KEY (staff_id) REFERENCES staff_members(staff_id)
+    );
+
+    -- 11. Standard Operating Procedures (SOP) & Rule Book Checklists
+    CREATE TABLE IF NOT EXISTS sop_checklists (
+      id TEXT PRIMARY KEY,
+      category TEXT NOT NULL,
+      task TEXT NOT NULL,
+      frequency TEXT NOT NULL,
+      completed INTEGER NOT NULL DEFAULT 0,
+      completed_by TEXT,
+      completed_at DATETIME
+    );
+  `);
+
+  seedRestaurantProfile(db);
   seedInitialShift(db);
-
-  // Seed Initial Inventory Items & Recipe BOM
   seedInventory(db);
-
-  // Seed Dining Floor Plan & Running Table Orders
   seedInitialTables(db);
-
-  // Seed Regular Customers & Loyalty Profiles
-  seedInitialCustomers(db);
+  seedInitialProcurement(db);
+  seedStaffAndPayroll(db);
+  seedSopChecklists(db);
 
   dbInstance = db;
   return dbInstance;
@@ -317,51 +829,189 @@ function seedInventory(db: Database) {
   const count = check[0]?.values[0]?.[0] as number;
   if (count > 0) return;
 
-  const ingredients = [
-    { id: 'ing-paneer', name: 'Fresh Malai Paneer', unit: 'g', stock: 12500, reorder: 3000, cost: 0.45 },
-    { id: 'ing-butter', name: 'Amul Salted Butter', unit: 'g', stock: 8000, reorder: 2000, cost: 0.60 },
-    { id: 'ing-cream', name: 'Fresh Dairy Cream', unit: 'ml', stock: 6500, reorder: 1500, cost: 0.35 },
-    { id: 'ing-flour', name: 'Maida Wheat Flour', unit: 'g', stock: 25000, reorder: 5000, cost: 0.08 },
-    { id: 'ing-chicken', name: 'Fresh Boneless Chicken', unit: 'g', stock: 14000, reorder: 4000, cost: 0.38 },
-    { id: 'ing-rice', name: 'Aged Basmati Rice', unit: 'g', stock: 30000, reorder: 6000, cost: 0.12 },
-    { id: 'ing-dal', name: 'Black Urad Dal', unit: 'g', stock: 15000, reorder: 3500, cost: 0.16 },
-    { id: 'ing-curd', name: 'Whole Milk Curd', unit: 'g', stock: 11000, reorder: 2500, cost: 0.09 },
-    { id: 'ing-mango', name: 'Alphonso Mango Puree', unit: 'ml', stock: 5000, reorder: 1200, cost: 0.55 },
-    { id: 'ing-box', name: 'Eco-Craft Meal Box', unit: 'pcs', stock: 450, reorder: 100, cost: 12.00 }
-  ];
+  let masterItems: Array<{
+    ingredient_id: string;
+    name: string;
+    unit: string;
+    category: string;
+    treatment: string;
+    current_stock: number;
+    reorder_level: number;
+    cost_per_unit: number;
+  }> = [];
 
-  for (const ing of ingredients) {
+  try {
+    const jsonPath = path.resolve(process.cwd(), 'src/server/inventory_master.json');
+    if (fs.existsSync(jsonPath)) {
+      masterItems = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    }
+  } catch (err) {
+    console.error('Failed to load inventory_master.json:', err);
+  }
+
+  for (const item of masterItems) {
     db.run(
-      `INSERT INTO inventory_items (ingredient_id, name, unit, current_stock, reorder_level, cost_per_unit)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [ing.id, ing.name, ing.unit, ing.stock, ing.reorder, ing.cost]
+      `INSERT INTO inventory_items (ingredient_id, name, unit, category, treatment, current_stock, reorder_level, cost_per_unit, barcode)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        item.ingredient_id,
+        item.name,
+        item.unit,
+        item.category,
+        item.treatment,
+        item.current_stock || 0,
+        item.reorder_level || 0,
+        item.cost_per_unit || 0.00,
+        `TOT-BAR-${item.ingredient_id.replace('TOT-', '')}`
+      ]
     );
   }
 
-  // Seed Recipe BOM
+  // Seed Recipe BOM linking authoritative reopening menu dishes to master raw materials
   const recipes = [
-    // Paneer Butter Masala (item-001)
-    { item_id: 'item-001', ingredient_id: 'ing-paneer', qty: 200 },
-    { item_id: 'item-001', ingredient_id: 'ing-butter', qty: 40 },
-    { item_id: 'item-001', ingredient_id: 'ing-cream', qty: 30 },
-    // Dal Makhani (item-002)
-    { item_id: 'item-002', ingredient_id: 'ing-dal', qty: 150 },
-    { item_id: 'item-002', ingredient_id: 'ing-butter', qty: 50 },
-    { item_id: 'item-002', ingredient_id: 'ing-cream', qty: 25 },
-    // Butter Naan (item-003)
-    { item_id: 'item-003', ingredient_id: 'ing-flour', qty: 120 },
-    { item_id: 'item-003', ingredient_id: 'ing-butter', qty: 20 },
-    // Chicken Dum Biryani (item-004)
-    { item_id: 'item-004', ingredient_id: 'ing-chicken', qty: 250 },
-    { item_id: 'item-004', ingredient_id: 'ing-rice', qty: 200 },
-    { item_id: 'item-004', ingredient_id: 'ing-curd', qty: 50 },
-    // Paneer Tikka (item-005)
-    { item_id: 'item-005', ingredient_id: 'ing-paneer', qty: 220 },
-    { item_id: 'item-005', ingredient_id: 'ing-curd', qty: 60 },
-    { item_id: 'item-005', ingredient_id: 'ing-butter', qty: 15 },
-    // Fresh Mango Lassi (item-006)
-    { item_id: 'item-006', ingredient_id: 'ing-curd', qty: 200 },
-    { item_id: 'item-006', ingredient_id: 'ing-mango', qty: 80 }
+    // --- CHOWMEIN (Veg, Egg, Chicken, Pork, Mixed) ---
+    // Veg Chowmein (Small, Medium, Large)
+    { item_id: 'cm-veg-s', ingredient_id: 'TOT-004', qty: 0.08 }, // dry noodles kg
+    { item_id: 'cm-veg-s', ingredient_id: 'TOT-006', qty: 0.02 }, // cooking oil litre
+    { item_id: 'cm-veg-s', ingredient_id: 'TOT-018', qty: 0.04 }, // cabbage kg
+    { item_id: 'cm-veg-s', ingredient_id: 'TOT-019', qty: 0.02 }, // carrot kg
+    { item_id: 'cm-veg-s', ingredient_id: 'TOT-017', qty: 0.02 }, // capsicum kg
+    { item_id: 'cm-veg-s', ingredient_id: 'TOT-007', qty: 0.01 }, // soy sauce litre
+
+    { item_id: 'cm-veg-m', ingredient_id: 'TOT-004', qty: 0.12 },
+    { item_id: 'cm-veg-m', ingredient_id: 'TOT-006', qty: 0.03 },
+    { item_id: 'cm-veg-m', ingredient_id: 'TOT-018', qty: 0.06 },
+    { item_id: 'cm-veg-m', ingredient_id: 'TOT-019', qty: 0.03 },
+    { item_id: 'cm-veg-m', ingredient_id: 'TOT-017', qty: 0.03 },
+    { item_id: 'cm-veg-m', ingredient_id: 'TOT-007', qty: 0.015 },
+
+    { item_id: 'cm-veg-l', ingredient_id: 'TOT-004', qty: 0.25 },
+    { item_id: 'cm-veg-l', ingredient_id: 'TOT-006', qty: 0.05 },
+    { item_id: 'cm-veg-l', ingredient_id: 'TOT-018', qty: 0.12 },
+    { item_id: 'cm-veg-l', ingredient_id: 'TOT-019', qty: 0.06 },
+    { item_id: 'cm-veg-l', ingredient_id: 'TOT-017', qty: 0.06 },
+    { item_id: 'cm-veg-l', ingredient_id: 'TOT-007', qty: 0.03 },
+
+    // Egg Chowmein (Small, Medium, Large)
+    { item_id: 'cm-egg-s', ingredient_id: 'TOT-004', qty: 0.08 },
+    { item_id: 'cm-egg-s', ingredient_id: 'TOT-003', qty: 1 }, // 1 egg
+    { item_id: 'cm-egg-s', ingredient_id: 'TOT-006', qty: 0.02 },
+
+    { item_id: 'cm-egg-m', ingredient_id: 'TOT-004', qty: 0.12 },
+    { item_id: 'cm-egg-m', ingredient_id: 'TOT-003', qty: 2 }, // 2 eggs
+    { item_id: 'cm-egg-m', ingredient_id: 'TOT-006', qty: 0.03 },
+
+    { item_id: 'cm-egg-l', ingredient_id: 'TOT-004', qty: 0.25 },
+    { item_id: 'cm-egg-l', ingredient_id: 'TOT-003', qty: 3 }, // 3 eggs
+    { item_id: 'cm-egg-l', ingredient_id: 'TOT-006', qty: 0.05 },
+
+    // Chicken Chowmein (Small, Medium, Large)
+    { item_id: 'cm-chk-s', ingredient_id: 'TOT-004', qty: 0.08 },
+    { item_id: 'cm-chk-s', ingredient_id: 'TOT-001', qty: 0.06 }, // 60g chicken
+    { item_id: 'cm-chk-s', ingredient_id: 'TOT-006', qty: 0.02 },
+
+    { item_id: 'cm-chk-m', ingredient_id: 'TOT-004', qty: 0.12 },
+    { item_id: 'cm-chk-m', ingredient_id: 'TOT-001', qty: 0.10 }, // 100g chicken
+    { item_id: 'cm-chk-m', ingredient_id: 'TOT-006', qty: 0.03 },
+
+    { item_id: 'cm-chk-l', ingredient_id: 'TOT-004', qty: 0.25 },
+    { item_id: 'cm-chk-l', ingredient_id: 'TOT-001', qty: 0.20 }, // 200g chicken
+    { item_id: 'cm-chk-l', ingredient_id: 'TOT-006', qty: 0.05 },
+
+    // Pork Chowmein (Small, Medium, Large)
+    { item_id: 'cm-prk-s', ingredient_id: 'TOT-004', qty: 0.08 },
+    { item_id: 'cm-prk-s', ingredient_id: 'TOT-002', qty: 0.06 }, // 60g pork
+    { item_id: 'cm-prk-s', ingredient_id: 'TOT-006', qty: 0.02 },
+
+    { item_id: 'cm-prk-m', ingredient_id: 'TOT-004', qty: 0.12 },
+    { item_id: 'cm-prk-m', ingredient_id: 'TOT-002', qty: 0.10 }, // 100g pork
+    { item_id: 'cm-prk-m', ingredient_id: 'TOT-006', qty: 0.03 },
+
+    { item_id: 'cm-prk-l', ingredient_id: 'TOT-004', qty: 0.25 },
+    { item_id: 'cm-prk-l', ingredient_id: 'TOT-002', qty: 0.20 }, // 200g pork
+    { item_id: 'cm-prk-l', ingredient_id: 'TOT-006', qty: 0.05 },
+
+    // Mixed Chowmein (Small, Medium, Large)
+    { item_id: 'cm-mix-s', ingredient_id: 'TOT-004', qty: 0.08 },
+    { item_id: 'cm-mix-s', ingredient_id: 'TOT-001', qty: 0.04 },
+    { item_id: 'cm-mix-s', ingredient_id: 'TOT-003', qty: 1 },
+
+    { item_id: 'cm-mix-m', ingredient_id: 'TOT-004', qty: 0.12 },
+    { item_id: 'cm-mix-m', ingredient_id: 'TOT-001', qty: 0.06 },
+    { item_id: 'cm-mix-m', ingredient_id: 'TOT-002', qty: 0.04 },
+    { item_id: 'cm-mix-m', ingredient_id: 'TOT-003', qty: 1 },
+
+    { item_id: 'cm-mix-l', ingredient_id: 'TOT-004', qty: 0.25 },
+    { item_id: 'cm-mix-l', ingredient_id: 'TOT-001', qty: 0.10 },
+    { item_id: 'cm-mix-l', ingredient_id: 'TOT-002', qty: 0.08 },
+    { item_id: 'cm-mix-l', ingredient_id: 'TOT-003', qty: 2 },
+
+    // --- FRIED RICE (Veg, Egg, Chicken, Pork, Mixed) ---
+    // Veg Fried Rice
+    { item_id: 'fr-veg-s', ingredient_id: 'TOT-005', qty: 0.08 }, // raw rice kg
+    { item_id: 'fr-veg-s', ingredient_id: 'TOT-006', qty: 0.02 },
+    { item_id: 'fr-veg-m', ingredient_id: 'TOT-005', qty: 0.12 },
+    { item_id: 'fr-veg-m', ingredient_id: 'TOT-006', qty: 0.03 },
+    { item_id: 'fr-veg-l', ingredient_id: 'TOT-005', qty: 0.25 },
+    { item_id: 'fr-veg-l', ingredient_id: 'TOT-006', qty: 0.05 },
+
+    // Egg Fried Rice
+    { item_id: 'fr-egg-s', ingredient_id: 'TOT-005', qty: 0.08 },
+    { item_id: 'fr-egg-s', ingredient_id: 'TOT-003', qty: 1 },
+    { item_id: 'fr-egg-m', ingredient_id: 'TOT-005', qty: 0.12 },
+    { item_id: 'fr-egg-m', ingredient_id: 'TOT-003', qty: 2 },
+    { item_id: 'fr-egg-l', ingredient_id: 'TOT-005', qty: 0.25 },
+    { item_id: 'fr-egg-l', ingredient_id: 'TOT-003', qty: 3 },
+
+    // Chicken Fried Rice
+    { item_id: 'fr-chk-s', ingredient_id: 'TOT-005', qty: 0.08 },
+    { item_id: 'fr-chk-s', ingredient_id: 'TOT-001', qty: 0.06 },
+    { item_id: 'fr-chk-m', ingredient_id: 'TOT-005', qty: 0.12 },
+    { item_id: 'fr-chk-m', ingredient_id: 'TOT-001', qty: 0.10 },
+    { item_id: 'fr-chk-l', ingredient_id: 'TOT-005', qty: 0.25 },
+    { item_id: 'fr-chk-l', ingredient_id: 'TOT-001', qty: 0.20 },
+
+    // Pork Fried Rice
+    { item_id: 'fr-prk-s', ingredient_id: 'TOT-005', qty: 0.08 },
+    { item_id: 'fr-prk-s', ingredient_id: 'TOT-002', qty: 0.06 },
+    { item_id: 'fr-prk-m', ingredient_id: 'TOT-005', qty: 0.12 },
+    { item_id: 'fr-prk-m', ingredient_id: 'TOT-002', qty: 0.10 },
+    { item_id: 'fr-prk-l', ingredient_id: 'TOT-005', qty: 0.25 },
+    { item_id: 'fr-prk-l', ingredient_id: 'TOT-002', qty: 0.20 },
+
+    // Mixed Fried Rice
+    { item_id: 'fr-mix-s', ingredient_id: 'TOT-005', qty: 0.08 },
+    { item_id: 'fr-mix-s', ingredient_id: 'TOT-001', qty: 0.04 },
+    { item_id: 'fr-mix-s', ingredient_id: 'TOT-003', qty: 1 },
+    { item_id: 'fr-mix-m', ingredient_id: 'TOT-005', qty: 0.12 },
+    { item_id: 'fr-mix-m', ingredient_id: 'TOT-001', qty: 0.06 },
+    { item_id: 'fr-mix-m', ingredient_id: 'TOT-002', qty: 0.04 },
+    { item_id: 'fr-mix-m', ingredient_id: 'TOT-003', qty: 1 },
+    { item_id: 'fr-mix-l', ingredient_id: 'TOT-005', qty: 0.25 },
+    { item_id: 'fr-mix-l', ingredient_id: 'TOT-001', qty: 0.10 },
+    { item_id: 'fr-mix-l', ingredient_id: 'TOT-002', qty: 0.08 },
+    { item_id: 'fr-mix-l', ingredient_id: 'TOT-003', qty: 2 },
+
+    // --- CHILLY STARTERS ---
+    { item_id: 'chl-chk-dry', ingredient_id: 'TOT-001', qty: 0.28 },
+    { item_id: 'chl-chk-dry', ingredient_id: 'TOT-017', qty: 0.05 },
+    { item_id: 'chl-chk-dry', ingredient_id: 'TOT-014', qty: 0.05 },
+    { item_id: 'chl-chk-dry', ingredient_id: 'TOT-006', qty: 0.03 },
+
+    { item_id: 'chl-chk-grv', ingredient_id: 'TOT-001', qty: 0.28 },
+    { item_id: 'chl-chk-grv', ingredient_id: 'TOT-017', qty: 0.06 },
+    { item_id: 'chl-chk-grv', ingredient_id: 'TOT-014', qty: 0.06 },
+    { item_id: 'chl-chk-grv', ingredient_id: 'TOT-007', qty: 0.02 },
+
+    { item_id: 'chl-prk-dry', ingredient_id: 'TOT-002', qty: 0.28 },
+    { item_id: 'chl-prk-dry', ingredient_id: 'TOT-017', qty: 0.05 },
+    { item_id: 'chl-prk-dry', ingredient_id: 'TOT-014', qty: 0.05 },
+    { item_id: 'chl-prk-dry', ingredient_id: 'TOT-006', qty: 0.03 },
+
+    { item_id: 'chl-prk-grv', ingredient_id: 'TOT-002', qty: 0.28 },
+    { item_id: 'chl-prk-grv', ingredient_id: 'TOT-017', qty: 0.06 },
+    { item_id: 'chl-prk-grv', ingredient_id: 'TOT-014', qty: 0.06 },
+    { item_id: 'chl-prk-grv', ingredient_id: 'TOT-007', qty: 0.02 }
   ];
 
   for (const r of recipes) {
@@ -384,10 +1034,34 @@ function seedInitialShift(db: Database) {
       aggregator_sales, total_sales, order_count, expected_cash,
       actual_cash_counted, variance, opened_at, sync_status
     ) VALUES (
-      'shift-live-01', 'POS-01', 'Anita Deshmukh', 'OPEN', 2000.00,
+      'shift-live-01', 'POS-01', 'Active Cashier', 'OPEN', 0.00,
       0.00, 0.00, 0.00, 0.00, 0.00,
-      0.00, 0.00, 0, 2000.00,
+      0.00, 0.00, 0, 0.00,
       0.00, 0.00, CURRENT_TIMESTAMP, 'PENDING'
+    )
+  `);
+}
+
+function seedRestaurantProfile(db: Database) {
+  const check = db.exec("SELECT COUNT(*) as count FROM restaurant_profile");
+  const count = check[0]?.values[0]?.[0] as number;
+  if (count > 0) return;
+
+  db.run(`
+    INSERT INTO restaurant_profile (
+      profile_id, restaurant_name, outlet_name, address, gstin, fssai_licence, phone, email, currency_symbol, tax_cgst_rate, tax_sgst_rate
+    ) VALUES (
+      'main-profile',
+      'Talk of the Town',
+      'Imphal Main Outlet',
+      'Imphal, Manipur',
+      '14AAACT1234F1Z5',
+      '11624001000123',
+      '+91 98620 12345',
+      'talkofthetown312@gmail.com',
+      '₹',
+      2.5,
+      2.5
     )
   `);
 }
@@ -419,121 +1093,143 @@ function seedInitialTables(db: Database) {
       [t.id, t.name, t.section, t.cap]
     );
   }
-
-  // Seed a live running order on Table T-02 (4 guests) ready for Split-Bill or Transfer testing
-  const seedOrder1 = 'ord-seed-t02-running';
-  db.run(
-    `INSERT INTO orders (
-      order_id, outlet_id, terminal_id, invoice_number, table_id,
-      order_status, order_type, payment_method, sub_total, tax_total,
-      discount_total, grand_total, sync_status, created_at, updated_at
-    ) VALUES (?, 'OUTLET-BLR-01', 'POS-01', 'INV-T02-8810', 'T-02',
-              'PREPARING', 'DINE_IN', 'CASH', 1170.00, 58.50, 0.00, 1228.50, 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-    [seedOrder1]
-  );
-
-  db.run(
-    `INSERT INTO order_items (order_item_id, order_id, item_id, item_name, quantity, unit_price, sub_total)
-     VALUES 
-       ('oi-seed-1', ?, 'item-001', 'Paneer Butter Masala', 1, 340, 340),
-       ('oi-seed-2', ?, 'item-004', 'Chicken Dum Biryani', 1, 420, 420),
-       ('oi-seed-3', ?, 'item-003', 'Butter Naan', 2, 65, 130),
-       ('oi-seed-4', ?, 'item-006', 'Fresh Mango Lassi', 2, 140, 280)`,
-    [seedOrder1, seedOrder1, seedOrder1, seedOrder1]
-  );
-
-  db.run(
-    `UPDATE dining_tables 
-     SET status = 'OCCUPIED', active_order_id = ?, guest_count = 4, occupied_since = CURRENT_TIMESTAMP
-     WHERE table_id = 'T-02'`,
-    [seedOrder1]
-  );
-
-  // Seed a second running order on Table T-06 (2 guests) so Table Merge can combine two live orders
-  const seedOrder2 = 'ord-seed-t06-running';
-  db.run(
-    `INSERT INTO orders (
-      order_id, outlet_id, terminal_id, invoice_number, table_id,
-      order_status, order_type, payment_method, sub_total, tax_total,
-      discount_total, grand_total, sync_status, created_at, updated_at
-    ) VALUES (?, 'OUTLET-BLR-01', 'CAPTAIN-01', 'INV-T06-8814', 'T-06',
-              'PREPARING', 'DINE_IN', 'UPI', 600.00, 30.00, 0.00, 630.00, 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-    [seedOrder2]
-  );
-
-  db.run(
-    `INSERT INTO order_items (order_item_id, order_id, item_id, item_name, quantity, unit_price, sub_total)
-     VALUES 
-       ('oi-seed-5', ?, 'item-005', 'Paneer Tikka (6 Pcs)', 1, 320, 320),
-       ('oi-seed-6', ?, 'item-002', 'Dal Makhani', 1, 280, 280)`,
-    [seedOrder2, seedOrder2]
-  );
-
-  db.run(
-    `UPDATE dining_tables 
-     SET status = 'OCCUPIED', active_order_id = ?, guest_count = 2, occupied_since = CURRENT_TIMESTAMP
-     WHERE table_id = 'T-06'`,
-    [seedOrder2]
-  );
+  // All tables start clean and available - zero mock orders!
 }
 
-function seedInitialCustomers(db: Database) {
-  const check = db.exec("SELECT COUNT(*) as count FROM customers");
+function seedInitialCustomers(_db: Database) {
+  // Clean customer CRM - start fresh with zero mock customers
+}
+
+function seedInitialProcurement(db: Database) {
+  const check = db.exec("SELECT COUNT(*) as count FROM suppliers");
   const count = check[0]?.values[0]?.[0] as number;
   if (count > 0) return;
 
-  const customers = [
+  const suppliers = [
     {
-      id: 'cust-001',
-      phone: '9845012345',
-      name: 'Rahul Sharma',
-      email: 'rahul.sharma@bengalurutech.in',
-      points: 240,
-      spend: 5840.00,
-      visits: 7,
-      tier: 'GOLD'
+      id: 'sup-001',
+      name: 'Imphal Poultry & Meat Supply',
+      category: 'Poultry & Meat',
+      contact: 'Th. Tombi Singh',
+      phone: '9862011223',
+      email: 'meatorders@imphalmeat.com',
+      gstin: '14AAACT1122F1Z1',
+      terms: 7,
+      rating: 4.8
     },
     {
-      id: 'cust-002',
-      phone: '9880198765',
-      name: 'Priya Nair',
-      email: 'priya.nair@indiranagar.org',
-      points: 610,
-      spend: 14250.00,
-      visits: 16,
-      tier: 'PLATINUM'
+      id: 'sup-002',
+      name: 'Manipur Fresh Farm Greens',
+      category: 'Produce & Veg',
+      contact: 'N. Chaoba Devi',
+      phone: '9862022334',
+      email: 'veggies@manipurfresh.org',
+      gstin: '14AAACM2233J1Z4',
+      terms: 7,
+      rating: 4.7
     },
     {
-      id: 'cust-003',
-      phone: '9900112233',
-      name: 'Vikramaditya Rao',
-      email: 'vikram.rao@koramangala.co',
-      points: 85,
-      spend: 1920.00,
-      visits: 3,
-      tier: 'SILVER'
+      id: 'sup-003',
+      name: 'Eastern Grains & Asian Noodles Hub',
+      category: 'Dry Grocery & Grains',
+      contact: 'K. Sanayaima',
+      phone: '9862033445',
+      email: 'wholesale@easterngrains.co.in',
+      gstin: '14AAACE3344K1ZY',
+      terms: 15,
+      rating: 4.9
     },
     {
-      id: 'cust-004',
-      phone: '9740556677',
-      name: 'Sneha Kulkarni',
-      email: 'sneha.k@studio.design',
-      points: 320,
-      spend: 7600.00,
-      visits: 9,
-      tier: 'GOLD'
+      id: 'sup-004',
+      name: 'NorthEast Eco-Packaging Solutions',
+      category: 'Packaging & Eco-ware',
+      contact: 'L. Biren',
+      phone: '9862044556',
+      email: 'sales@neecopack.in',
+      gstin: '14AAACN4455L1ZW',
+      terms: 21,
+      rating: 4.8
+    },
+    {
+      id: 'sup-005',
+      name: 'Manipur Asian Condiments & Spices',
+      category: 'Dry Grocery & Grains',
+      contact: 'M. Ibohal',
+      phone: '9862055667',
+      email: 'orders@manipurspices.in',
+      gstin: '14AAACM5566M1ZX',
+      terms: 15,
+      rating: 4.6
     }
   ];
 
-  for (const c of customers) {
+  for (const s of suppliers) {
     db.run(
-      `INSERT INTO customers (
-        customer_id, phone, name, email, loyalty_points, lifetime_spend, visit_count, tier, last_visit_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-      [c.id, c.phone, c.name, c.email, c.points, c.spend, c.visits, c.tier]
+      `INSERT INTO suppliers (
+        supplier_id, name, category, contact_person, phone, email, gstin, payment_terms_days, rating, is_active
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [s.id, s.name, s.category, s.contact, s.phone, s.email, s.gstin, s.terms, s.rating]
     );
   }
 }
+
+function seedStaffAndPayroll(db: Database) {
+  const check = db.exec("SELECT COUNT(*) as count FROM staff_members");
+  const count = check[0]?.values[0]?.[0] as number;
+  if (count > 0) return;
+
+  const staff = [
+    { id: 'STF-01', name: 'N. Sanatomba Singh', role: 'HEAD_CHEF', phone: '9862011001', salary: 28000, daily: 933, bank: 'SBI - SBIN0001234 · A/C 30491823901' },
+    { id: 'STF-02', name: 'K. Bikram', role: 'ASSISTANT_COOK', phone: '9862011002', salary: 18000, daily: 600, bank: 'HDFC - HDFC0000456 · A/C 50100293819' },
+    { id: 'STF-03', name: 'M. James', role: 'FLOOR_CAPTAIN', phone: '9862011003', salary: 16000, daily: 533, bank: 'Axis - UTIB0000789 · A/C 91901002938' },
+    { id: 'STF-04', name: 'L. Priyobrata', role: 'CASHIER', phone: '9862011004', salary: 15000, daily: 500, bank: 'BOB - BARB0IMPHAL · A/C 12040100029' },
+    { id: 'STF-05', name: 'Th. Romesh', role: 'STORE_KEEPER', phone: '9862011005', salary: 15000, daily: 500, bank: 'CBI - CBIN0281234 · A/C 20192837482' },
+    { id: 'STF-06', name: 'Y. Tomba', role: 'KITCHEN_HELPER', phone: '9862011006', salary: 12000, daily: 400, bank: 'Cash on Hand / Direct' }
+  ];
+
+  for (const s of staff) {
+    db.run(
+      `INSERT INTO staff_members (staff_id, name, role, phone, monthly_base_salary, daily_wage_rate, bank_account_info, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
+      [s.id, s.name, s.role, s.phone, s.salary, s.daily, s.bank]
+    );
+
+    // Initial payroll record for current month
+    db.run(
+      `INSERT INTO payroll_ledger (payroll_id, staff_id, staff_name, role, month, base_salary, days_worked, overtime_hours, overtime_pay, advance_deductions, bonus, net_payout, payment_status, payment_method, paid_at)
+       VALUES (?, ?, ?, ?, ?, ?, 30, 0, 0.00, 0.00, 0.00, ?, 'PAID', 'BANK_TRANSFER', CURRENT_TIMESTAMP)`,
+      [`PAY-${s.id}-202610`, s.id, s.name, s.role, 'October 2026', s.salary, s.salary]
+    );
+  }
+}
+
+function seedSopChecklists(db: Database) {
+  const check = db.exec("SELECT COUNT(*) as count FROM sop_checklists");
+  const count = check[0]?.values[0]?.[0] as number;
+  if (count > 0) return;
+
+  const sops = [
+    { id: 'sop-01', cat: 'OPENING', task: 'Inspect walk-in cold storage temp (<4°C) & gas pipeline pressure', freq: 'DAILY', comp: 1 },
+    { id: 'sop-02', cat: 'OPENING', task: 'Reconcile morning cash drawer float (₹2,000 baseline in POS-01)', freq: 'DAILY', comp: 1 },
+    { id: 'sop-03', cat: 'OPENING', task: 'Check pre-cut vegetables (TOT-014 to TOT-020) and noodle batch prep', freq: 'DAILY', comp: 1 },
+    { id: 'sop-04', cat: 'OPENING', task: 'Test ESC/POS KOT thermal printer feed and KDS network LAN ping', freq: 'DAILY', comp: 1 },
+    { id: 'sop-05', cat: 'CLOSING', task: 'Cashier shift close: print Z-Report & perform physical cash drawer drop', freq: 'DAILY', comp: 0 },
+    { id: 'sop-06', cat: 'CLOSING', task: 'Sanitize wok stations, exhaust range hoods, and grease catchment tray', freq: 'DAILY', comp: 0 },
+    { id: 'sop-07', cat: 'CLOSING', task: 'Lock dry grocery store (TOT-004, TOT-005) and power down non-essential lighting', freq: 'DAILY', comp: 0 },
+    { id: 'sop-08', cat: 'HYGIENE_SAFETY', task: 'FIFO rotation on fresh raw chicken (TOT-001) and pork (TOT-002)', freq: 'PER_SHIFT', comp: 1 },
+    { id: 'sop-09', cat: 'HYGIENE_SAFETY', task: 'Mandatory apron, headnet, and hand-wash audit across kitchen staff', freq: 'PER_SHIFT', comp: 1 },
+    { id: 'sop-10', cat: 'CASH_SHIFT', task: 'Cashier handover: confirm physical cash matches system expected before exit', freq: 'PER_SHIFT', comp: 0 }
+  ];
+
+  for (const item of sops) {
+    db.run(
+      `INSERT INTO sop_checklists (id, category, task, frequency, completed) VALUES (?, ?, ?, ?, ?)`,
+      [item.id, item.cat, item.task, item.freq, item.comp]
+    );
+  }
+}
+
+
 
 
 
