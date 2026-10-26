@@ -1,0 +1,6 @@
+{
+  "name": "Petpooja POS Ecosystem",
+  "description": "Production-grade hybrid-offline POS ecosystem with SQLite edge engine, bi-directional cloud sync, ESC/POS hardware spooler, floor LAN server, and aggregator webhooks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
